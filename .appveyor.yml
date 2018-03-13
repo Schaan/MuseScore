@@ -27,6 +27,10 @@ install:
     nuget install secure-file -ExcludeVersion &&
     secure-file\tools\secure-file -decrypt C:\MuseScore\build\appveyor\resources\osuosl_nighlies_rsa_nopp.enc -secret %ENCRYPT_SECRET_SSH%
     )
+  - IF DEFINED ENCRYPT_SECRET_CERTIFICATE (
+    nuget install secure-file -ExcludeVersion &&
+    secure-file\tools\secure-file -decrypt C:\MuseScore\build\appveyor\resources\musescore.p12.enc -secret %ENCRYPT_SECRET_CERTIFICATE%
+    )
 
 # scripts to run before build
 before_build:
@@ -52,6 +56,14 @@ before_build:
 
 after_build:
   - ccache.exe -s
+  - SET dSource=C:\MuseScore\win32install
+  - for /f "delims=" %%f in ('dir /a-d /b /s "%dSource%\*.dll" "%dSource%\*.exe"') do (
+      echo "Signing %%f"
+          "SignTool" sign /f "C:\MuseScore\build\build\appveyor\resources\musescore.p12" /t http://timestamp.verisign.com/scripts/timstamp.dll /p "%CERTIFICATE_PASSWORD%" "%%f"
+      )
+  - mingw32-make -f Makefile.mingw package
+ # - signFile.bat Musescore.msi
+
   - CD C:\MuseScore
   - RENAME C:\MuseScore\win32install\bin\musescore.exe nightly.exe
   - RENAME C:\MuseScore\win32install MuseScoreNightly
@@ -66,6 +78,11 @@ after_build:
   - SET BUILD_DATE=%Date:~10,4%-%Date:~4,2%-%Date:~7,2%-%hh%%time:~3,2%
   - SET ARTIFACT_NAME=MuseScoreNightly-%BUILD_DATE%-%APPVEYOR_REPO_BRANCH%-%MSversion%.7z
   - 7z a C:\MuseScore\%ARTIFACT_NAME% C:\MuseScore\MuseScoreNightly
+
+
+
+#make sure that the MSI is uploaded
+
 
   - SET SSH_IDENTITY=C:\MuseScore\build\appveyor\resources\osuosl_nighlies_rsa_nopp
   - SET PATH=%OLD_PATH%
