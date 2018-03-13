@@ -46,8 +46,8 @@ before_build:
   - SET OLD_PATH=%PATH%
   - echo %OLD_PATH%
   - echo %WIX%
-  - dir %WIX%
-  - dir %WIX%\bin
+  - dir "%WIX%"
+  - dir "%WIX%\bin"
   - SET PATH=C:\Qt\5.4\mingw491_32\bin;C:\Qt\Tools\mingw491_32\bin;%PATH%
   - CD C:\MuseScore
   # get revision number
