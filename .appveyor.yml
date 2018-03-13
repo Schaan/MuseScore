@@ -44,6 +44,7 @@ before_build:
     XCOPY Jack "C:\Program Files (x86)\Jack" /E /I /Y &&
     XCOPY ccache "C:\ccache" /E /I /Y
   - SET OLD_PATH=%PATH%
+  - echo %OLD_PATH%
   - SET PATH=C:\Qt\5.4\mingw491_32\bin;C:\Qt\Tools\mingw491_32\bin;%PATH%
   - CD C:\MuseScore
   # get revision number
